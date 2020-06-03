@@ -60,7 +60,7 @@ public class AclController {
         return ResponseData.success(200, "添加权限点成功");
     }
 
-    @PostMapping("/acl.json")
+    @PostMapping("/update.json")
     @ResponseBody
     public ResponseData updateSysAcl(SysAclParam sysAclParam) {
         sysAclService.updateAcl(sysAclParam);

@@ -41,4 +41,6 @@ public interface SysAclMapper {
     List<SysAcl> getAllList();
 
     List<SysAcl> getAclListByAclId(@Param("sysAclIdList") List<Integer> sysAclIdList);
+
+    List<SysAcl> getSysAclByUrl(@Param("url") String url);
 }

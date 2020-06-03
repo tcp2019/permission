@@ -12,8 +12,12 @@ import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @ClassName SysCoreServiceImpl
@@ -66,5 +70,30 @@ public class SysCoreServiceImpl implements SysCoreService {
             return Lists.newArrayList();
         }
         return sysAclMapper.getAclListByAclId(sysAclIdList);
+    }
+
+    @Override
+    public boolean hasUserAcl(HttpServletRequest request, HttpServletResponse response) {
+        String url = request.getServletPath();
+        List<SysAcl> userAclList = getCurrentUserAclList();
+        Set<Integer> userAclIdSet = userAclList.stream().map(sysAcl -> sysAcl.getId()).collect(Collectors.toSet());
+        // 根据当前 url 查询对应的权限点
+        List<SysAcl> sysAclList = sysAclMapper.getSysAclByUrl(url);
+        boolean hasUserAcl = false;
+        if (CollectionUtils.isEmpty(sysAclList)) {
+            return true;
+        }
+        for (SysAcl sysAcl : sysAclList) {
+            if (sysAcl == null || sysAcl.getStatus() != 1) {
+                hasUserAcl = true;
+                continue;
+            }
+            if (userAclIdSet.contains(sysAcl.getId())) {
+                hasUserAcl = true;
+                return hasUserAcl;
+
+            }
+        }
+        return hasUserAcl;
     }
 }

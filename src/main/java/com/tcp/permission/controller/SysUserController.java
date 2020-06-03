@@ -68,4 +68,9 @@ public class SysUserController {
         return ResponseData.success(200, "获取用户信息成功", map);
     }
 
+    @GetMapping("/noAuth.page")
+    public String noAuth() {
+        return "views/noAuth";
+    }
+
 }

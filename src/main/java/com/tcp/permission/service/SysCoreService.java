@@ -2,6 +2,8 @@ package com.tcp.permission.service;
 
 import com.tcp.permission.entity.SysAcl;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
@@ -17,4 +19,6 @@ public interface SysCoreService {
     List<SysAcl> getCurrentRoleAclList(Integer roleId);
 
     List<SysAcl> getUserAclListByUserId(Integer userId);
+
+    boolean hasUserAcl(HttpServletRequest request, HttpServletResponse response);
 }
