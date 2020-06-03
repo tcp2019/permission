@@ -20,5 +20,5 @@ public interface SysCoreService {
 
     List<SysAcl> getUserAclListByUserId(Integer userId);
 
-    boolean hasUserAcl(HttpServletRequest request, HttpServletResponse response);
+    boolean hasUserAcl(HttpServletRequest request);
 }

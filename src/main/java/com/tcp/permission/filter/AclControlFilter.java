@@ -59,7 +59,7 @@ public class AclControlFilter implements Filter {
             response.sendRedirect(noAuthPage);
         }
         SysCoreService sysCoreService = ApplicationContextHelper.popBean(SysCoreService.class);
-        if (!sysCoreService.hasUserAcl(request, response)) {
+        if (!sysCoreService.hasUserAcl(request)) {
             log.info("{} visit {},but no auth,params:{}", currentUser.getUsername(), servletPath, JSONUtils.toJSONString(parameterMap));
             response.sendRedirect(noAuthPage);
         } else {

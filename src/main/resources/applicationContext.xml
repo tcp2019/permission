@@ -9,6 +9,8 @@
         http://www.springframework.org/schema/context/spring-context.xsd
         http://www.springframework.org/schema/tx
         http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+
     <!-- 配置 Spring 相关 -->
     <!-- 启动包扫描功能 -->
     <context:component-scan base-package="com.tcp.permission.service"/>
@@ -71,4 +73,7 @@
         <!-- 批量sql -->
         <property name="multiStatementAllow" value="true"/>
     </bean>
+
+    <!-- 引入redis配置文件-->
+    <import resource="classpath:redis-context.xml"/>
 </beans>
