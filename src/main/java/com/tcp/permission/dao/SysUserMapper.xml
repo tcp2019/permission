@@ -28,7 +28,7 @@
         delete from sys_user
         where id = #{id,jdbcType=INTEGER}
     </delete>
-    <insert id="insert" parameterType="com.tcp.permission.entity.SysUser">
+    <insert id="insert" parameterType="com.tcp.permission.entity.SysUser" keyProperty="id" useGeneratedKeys="true">
         insert into sys_user (id, username, telephone,
         mail, password, remark,
         dept_id, status, operator,
@@ -38,7 +38,7 @@
         #{deptId,jdbcType=INTEGER}, #{status,jdbcType=INTEGER}, #{operator,jdbcType=VARCHAR},
         #{operatorTime,jdbcType=TIMESTAMP}, #{operatorIp,jdbcType=VARCHAR})
     </insert>
-    <insert id="insertSelective" parameterType="com.tcp.permission.entity.SysUser">
+    <insert id="insertSelective" parameterType="com.tcp.permission.entity.SysUser" keyProperty="id" useGeneratedKeys="true">
         insert into sys_user
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">

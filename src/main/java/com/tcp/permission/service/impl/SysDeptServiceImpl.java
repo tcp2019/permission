@@ -9,6 +9,7 @@ import com.tcp.permission.entity.SysDept;
 import com.tcp.permission.exception.ParamException;
 import com.tcp.permission.param.DeptParam;
 import com.tcp.permission.service.SysDeptService;
+import com.tcp.permission.service.SysLogService;
 import com.tcp.permission.util.BeanValidator;
 import com.tcp.permission.util.IpUtil;
 import com.tcp.permission.util.LevelUtil;
@@ -37,6 +38,9 @@ public class SysDeptServiceImpl implements SysDeptService {
     @Autowired
     private SysUserMapper sysUserMapper;
 
+    @Autowired
+    private SysLogService sysLogService;
+
     @Override
     public void saveSysDept(DeptParam deptParam) {
         //1. 校验参数是否满足要求
@@ -58,6 +62,7 @@ public class SysDeptServiceImpl implements SysDeptService {
         dept.setOperatorIp(IpUtil.getIpAddr(RequestHolder.getCurrentRequest()));
         dept.setOperatorTime(new Date());
         sysDeptMapper.insertSelective(dept);
+        sysLogService.saveDeptLog(null, dept);
     }
 
     /**
@@ -98,6 +103,7 @@ public class SysDeptServiceImpl implements SysDeptService {
         afterSysDept.setLevel(LevelUtil.calculateLevel(getLevel(deptParam.getParentId()), deptParam.getParentId()));
         SysDeptServiceImpl sysDeptServiceImpl = ApplicationContextHelper.popBean(SysDeptServiceImpl.class);
         sysDeptServiceImpl.updateWithChildren(beforeSysDept, afterSysDept);
+        sysLogService.saveDeptLog(beforeSysDept, afterSysDept);
 
     }
 

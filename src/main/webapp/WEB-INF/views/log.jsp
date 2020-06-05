@@ -151,7 +151,7 @@
             }
 
             function renderLogListAndPage(result, url) {
-                if (result.ret) {
+                if (result.status = 200) {
                     if (result.data.total > 0) {
                         var rendered = Mustache.render(logListTemplate, {
                             "logList": result.data.data,
@@ -164,8 +164,8 @@
                                         case 3: typeStr = "权限模块";break;
                                         case 4: typeStr = "权限点";break;
                                         case 5: typeStr = "角色";break;
-                                        case 6: typeStr = "角色权限关系";break;
-                                        case 7: typeStr = "角色用户关系";break;
+                                        case 7: typeStr = "角色权限关系";break;
+                                        case 6: typeStr = "角色用户关系";break;
                                         default: typeStr = "未知";
                                     }
                                     return typeStr;
@@ -173,7 +173,7 @@
                             },
                             "showDate" :function () {
                                 return function (text, render) {
-                                    return new Date(this.operateTime).Format("yyyy-MM-dd hh:mm:ss");
+                                    return this.operatorTime;
                                 }
                             },
                             "showOldValue": function () {
@@ -215,7 +215,7 @@
                                 id: logId
                             },
                             success: function (result) {
-                                if (result.ret) {
+                                if (result.status = 200) {
                                     showMessage("还原历史记录", "操作成功", true);
                                     loadLogList();
                                 } else {

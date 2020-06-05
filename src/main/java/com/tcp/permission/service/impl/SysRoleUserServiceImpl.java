@@ -7,6 +7,7 @@ import com.tcp.permission.dao.SysRoleUserMapper;
 import com.tcp.permission.dao.SysUserMapper;
 import com.tcp.permission.entity.SysRoleUser;
 import com.tcp.permission.entity.SysUser;
+import com.tcp.permission.service.SysLogService;
 import com.tcp.permission.service.SysRoleUserService;
 import com.tcp.permission.util.IpUtil;
 import com.tcp.permission.util.StringUtil;
@@ -36,6 +37,9 @@ public class SysRoleUserServiceImpl implements SysRoleUserService {
 
     @Autowired
     private SysUserMapper sysUserMapper;
+
+    @Autowired
+    private SysLogService sysLogService;
 
     @Override
     public Map<String, List<SysUser>> users(Integer roleId) {
@@ -82,5 +86,6 @@ public class SysRoleUserServiceImpl implements SysRoleUserService {
                 sysRoleUserMapper.insertSelective(sysRoleUser);
             }
         }
+        sysLogService.saveRoleUserLog(roleId, userIdListByRoleId, userIdList);
     }
 }

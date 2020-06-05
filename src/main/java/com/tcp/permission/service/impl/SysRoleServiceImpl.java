@@ -14,6 +14,7 @@ import com.tcp.permission.entity.SysRole;
 import com.tcp.permission.exception.ParamException;
 import com.tcp.permission.param.SysRoleParam;
 import com.tcp.permission.service.SysCoreService;
+import com.tcp.permission.service.SysLogService;
 import com.tcp.permission.service.SysRoleService;
 import com.tcp.permission.util.BeanValidator;
 import com.tcp.permission.util.IpUtil;
@@ -50,6 +51,9 @@ public class SysRoleServiceImpl implements SysRoleService {
     @Autowired
     private SysRoleAclMapper sysRoleAclMapper;
 
+    @Autowired
+    private SysLogService sysLogService;
+
     @Override
     public void saveSysRole(SysRoleParam sysRoleParam) {
         //校验参数格式
@@ -64,6 +68,7 @@ public class SysRoleServiceImpl implements SysRoleService {
         sysRole.setOperatorIp(IpUtil.getIpAddr(RequestHolder.getCurrentRequest()));
         sysRole.setOperatorTime(new Date());
         sysRoleMapper.insertSelective(sysRole);
+        sysLogService.saveRoleLog(null, sysRole);
     }
 
     @Override
@@ -74,12 +79,14 @@ public class SysRoleServiceImpl implements SysRoleService {
         if (checkExist(sysRoleParam.getId(), sysRoleParam.getName())) {
             throw new ParamException("当前角色名称已存在");
         }
-        SysRole sysRole = SysRole.builder().name(sysRoleParam.getName()).status(sysRoleParam.getStatus())
+        SysRole beforeSysRole = sysRoleMapper.selectByPrimaryKey(sysRoleParam.getId());
+        SysRole afterSysRole = SysRole.builder().name(sysRoleParam.getName()).status(sysRoleParam.getStatus())
                 .type(sysRoleParam.getType()).remark(sysRoleParam.getRemark()).id(sysRoleParam.getId()).build();
-        sysRole.setOperator(RequestHolder.getCurrentUser().getUsername());
-        sysRole.setOperatorIp(IpUtil.getIpAddr(RequestHolder.getCurrentRequest()));
-        sysRole.setOperatorTime(new Date());
-        sysRoleMapper.updateByPrimaryKeySelective(sysRole);
+        afterSysRole.setOperator(RequestHolder.getCurrentUser().getUsername());
+        afterSysRole.setOperatorIp(IpUtil.getIpAddr(RequestHolder.getCurrentRequest()));
+        afterSysRole.setOperatorTime(new Date());
+        sysRoleMapper.updateByPrimaryKeySelective(afterSysRole);
+        sysLogService.saveRoleLog(beforeSysRole, afterSysRole);
     }
 
     @Override

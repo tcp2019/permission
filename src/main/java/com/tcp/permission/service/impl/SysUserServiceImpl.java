@@ -14,6 +14,7 @@ import com.tcp.permission.entity.SysRole;
 import com.tcp.permission.entity.SysUser;
 import com.tcp.permission.exception.ParamException;
 import com.tcp.permission.param.UserParam;
+import com.tcp.permission.service.SysLogService;
 import com.tcp.permission.service.SysRoleUserService;
 import com.tcp.permission.service.SysUserService;
 import com.tcp.permission.util.BeanValidator;
@@ -55,6 +56,9 @@ public class SysUserServiceImpl implements SysUserService {
     @Autowired
     private SysRoleUserService sysRoleUserService;
 
+    @Autowired
+    private SysLogService sysLogService;
+
     @Override
     public void saveSysUser(UserParam userParam) {
         //校验 userParam 参数是否符合要求
@@ -81,6 +85,7 @@ public class SysUserServiceImpl implements SysUserService {
 
             //TODO sendPasswordEmail
             sysUserMapper.insertSelective(sysUser);
+            sysLogService.saveUserLog(null, sysUser);
         }
     }
 
@@ -102,15 +107,16 @@ public class SysUserServiceImpl implements SysUserService {
         if (sysDept == null) {
             throw new ParamException("用户所在部门不存在");
         } else {
-            SysUser sysUser = SysUser.builder().username(userParam.getUsername()).deptId(userParam.getDeptId())
+            SysUser afterSysUser = SysUser.builder().username(userParam.getUsername()).deptId(userParam.getDeptId())
                     .mail(userParam.getMail()).remark(userParam.getRemark()).telephone(userParam.getTelephone())
                     .status(userParam.getStatus()).id(userParam.getId()).build();
-            sysUser.setOperator(RequestHolder.getCurrentUser().getUsername());
-            sysUser.setOperatorIp(IpUtil.getIpAddr(RequestHolder.getCurrentRequest()));
-            sysUser.setOperatorTime(new Date());
+            afterSysUser.setOperator(RequestHolder.getCurrentUser().getUsername());
+            afterSysUser.setOperatorIp(IpUtil.getIpAddr(RequestHolder.getCurrentRequest()));
+            afterSysUser.setOperatorTime(new Date());
 
             //TODO sendPasswordEmail
-            sysUserMapper.updateByPrimaryKeySelective(sysUser);
+            sysUserMapper.updateByPrimaryKeySelective(afterSysUser);
+            sysLogService.saveUserLog(beforeSysUser, afterSysUser);
         }
     }
 

@@ -7,6 +7,7 @@ import com.tcp.permission.entity.SysAcl;
 import com.tcp.permission.exception.ParamException;
 import com.tcp.permission.param.SysAclParam;
 import com.tcp.permission.service.SysAclService;
+import com.tcp.permission.service.SysLogService;
 import com.tcp.permission.util.BeanValidator;
 import com.tcp.permission.util.IpUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,9 @@ import java.util.List;
 public class SysAclServiceImpl implements SysAclService {
     @Autowired
     private SysAclMapper sysAclMapper;
+
+    @Autowired
+    private SysLogService sysLogService;
 
     @Override
     public PageResult<SysAcl> aclList(Integer aclModuleId, Integer pageSize, Integer pageNo) {
@@ -55,6 +59,7 @@ public class SysAclServiceImpl implements SysAclService {
         sysAcl.setOperatorIp(IpUtil.getIpAddr(RequestHolder.getCurrentRequest()));
         sysAcl.setOperatorTime(new Date());
         sysAclMapper.insertSelective(sysAcl);
+        sysLogService.saveAclLog(null, sysAcl);
     }
 
     @Override
@@ -65,13 +70,15 @@ public class SysAclServiceImpl implements SysAclService {
         if (checkExist(sysAclParam.getId(), sysAclParam.getName(), sysAclParam.getAclModuleId())) {
             throw new ParamException("同一权限模块下权限点名称不能相同");
         }
-        SysAcl sysAcl = SysAcl.builder().id(sysAclParam.getId()).aclModuleId(sysAclParam.getAclModuleId())
+        SysAcl beforeSysAcl = sysAclMapper.selectByPrimaryKey(sysAclParam.getId());
+        SysAcl afterSysAcl = SysAcl.builder().id(sysAclParam.getId()).aclModuleId(sysAclParam.getAclModuleId())
                 .code(sysAclParam.getCode()).name(sysAclParam.getName()).remark(sysAclParam.getRemark())
                 .status(sysAclParam.getStatus()).url(sysAclParam.getUrl()).type(sysAclParam.getType()).seq(sysAclParam.getSeq()).build();
-        sysAcl.setOperator(RequestHolder.getCurrentUser().getUsername());
-        sysAcl.setOperatorIp(IpUtil.getIpAddr(RequestHolder.getCurrentRequest()));
-        sysAcl.setOperatorTime(new Date());
-        sysAclMapper.updateByPrimaryKeySelective(sysAcl);
+        afterSysAcl.setOperator(RequestHolder.getCurrentUser().getUsername());
+        afterSysAcl.setOperatorIp(IpUtil.getIpAddr(RequestHolder.getCurrentRequest()));
+        afterSysAcl.setOperatorTime(new Date());
+        sysAclMapper.updateByPrimaryKeySelective(afterSysAcl);
+        sysLogService.saveAclLog(beforeSysAcl, afterSysAcl);
     }
 
     /**

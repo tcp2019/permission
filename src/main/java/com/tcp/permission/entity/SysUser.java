@@ -3,6 +3,7 @@ package com.tcp.permission.entity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 
@@ -27,7 +28,7 @@ public class SysUser {
     private Integer status;
 
     private String operator;
-
+    @DateTimeFormat(pattern ="yyyy-MM-dd hh:mm:ss")
     private Date operatorTime;
 
     private String operatorIp;

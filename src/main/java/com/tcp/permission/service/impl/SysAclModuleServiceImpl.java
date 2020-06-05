@@ -8,6 +8,7 @@ import com.tcp.permission.entity.SysDept;
 import com.tcp.permission.exception.ParamException;
 import com.tcp.permission.param.SysAclModuleParam;
 import com.tcp.permission.service.SysAclModuleService;
+import com.tcp.permission.service.SysLogService;
 import com.tcp.permission.util.BeanValidator;
 import com.tcp.permission.util.IpUtil;
 import com.tcp.permission.util.LevelUtil;
@@ -28,6 +29,9 @@ public class SysAclModuleServiceImpl implements SysAclModuleService {
     @Autowired
     private SysAclModuleMapper sysAclModuleMapper;
 
+    @Autowired
+    private SysLogService sysLogService;
+
     @Override
     public void saveSysAclModule(SysAclModuleParam sysAclModuleParam) {
         //校验参数格式
@@ -42,6 +46,7 @@ public class SysAclModuleServiceImpl implements SysAclModuleService {
         sysAclModule.setOperatorIp(IpUtil.getIpAddr(RequestHolder.getCurrentRequest()));
         sysAclModule.setOperatorTime(new Date());
         sysAclModuleMapper.insertSelective(sysAclModule);
+        sysLogService.saveAclModuleLog(null, sysAclModule);
     }
 
     @Override
@@ -60,6 +65,7 @@ public class SysAclModuleServiceImpl implements SysAclModuleService {
         sysAclModule.setOperatorIp(IpUtil.getIpAddr(RequestHolder.getCurrentRequest()));
         sysAclModule.setOperatorTime(new Date());
         sysAclModuleMapper.updateByPrimaryKeySelective(sysAclModule);
+        sysLogService.saveAclModuleLog(beforeSysAclModule, sysAclModule);
     }
 
     /**
